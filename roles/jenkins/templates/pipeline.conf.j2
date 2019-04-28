@@ -17,19 +17,19 @@
       <configVersion>2</configVersion>
       <userRemoteConfigs>
         <hudson.plugins.git.UserRemoteConfig>
-		<url>{{ project_repo }}</url>
+		<url>{{ pipelinejobs.project_repo }}</url>
         </hudson.plugins.git.UserRemoteConfig>
       </userRemoteConfigs>
       <branches>
         <hudson.plugins.git.BranchSpec>
-		<name>{{ repo_branch }}</name>
+		<name>{{ pipelinejobs.repo_branch }}</name>
         </hudson.plugins.git.BranchSpec>
       </branches>
       <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
       <submoduleCfg class="list"/>
       <extensions/>
     </scm>
-    <scriptPath>{{ jenkinsfile }}</scriptPath>
+    <scriptPath>{{ pipelinejobs.jenkinsfile }}</scriptPath>
     <lightweight>true</lightweight>
   </definition>
   <triggers/>
