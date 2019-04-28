@@ -115,10 +115,10 @@
   command: docker restart jenkins
 
 - name: update package list
-  command: sudo docker exec -it -u root jenkins apt update
+  command: docker exec -u root jenkins apt update
 
 - name: install build essential for make
-  command: sudo docker exec -it -u root jenkins apt install build-essential -y
+  command: docker exec -u root jenkins apt install build-essential -y
 
 - name: Make sure Jenkins is responding on the configured port again
   wait_for:
