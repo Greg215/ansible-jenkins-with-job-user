@@ -1,0 +1,121 @@
+---
+- name: copy over the dockerfile for jenkins to created machine
+  synchronize:
+   src: files/jenkinsfile/
+   dest: /tmp/jenkins_dockerfile
+   archive: yes
+   links: yes
+
+# /tmp is not a good place for jenkins home files, normally put it
+# in the AWS EBS or other NFS
+- name: create jenkins home volume in tmp folder
+  file:
+    path: "{{ jenkins_home_volume }}"
+    state: directory
+    mode: 0755
+    owner: ubuntu
+    group: ubuntu
+
+# will build jenkins from Dockerfile with also the plugins
+- name: build jenkins from Dockerfile will take few mins
+  docker_image:
+     name: "{{ image_name }}"
+     tag: "{{ image_tag }}"
+     state: present
+     path: "{{ dockerfile_path }}"
+
+- name: run jenkins inside the container by using the jenkins image
+  docker_container:
+    name: "{{ jenkins_docker_name }}"
+    image: "{{ jenkins_image }}"
+    privileged: true
+    ports:
+      - 8080:8080
+    volumes:
+      - /tmp/jenkins_home:/var/jenkins_home
+      - /usr/bin/docker:/usr/bin/docker
+      - /var/run/docker.sock:/var/run/docker.sock
+
+- name: Make sure Jenkins is responding on the configured port.
+  wait_for:
+    port: 8080
+    delay: 3
+    timeout: 30
+
+# create the initial user instaed of using the initial password
+- name: Include vars of users
+  include_vars:
+    file: vars/users.yml
+
+- name: create user directory
+  file:
+    path: "{{ jenkins_home_volume }}/users/{{ item.user_directory }}"
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+  with_items:
+    - "{{ users }}"
+
+- name: copy over the users xml file
+  synchronize:
+    src: files/users.xml
+    dest: "{{ jenkins_home_volume }}/users/users.xml"
+    archive: yes
+    links: yes
+
+- name: copy over users config
+  template:
+    src: user.conf.j2
+    dest: "{{ jenkins_home_volume }}/users/{{ item.user_directory }}/config.xml"
+  vars:
+    user: "{{ item }}"
+  with_items:
+    - "{{ users }}"
+
+- name: Include vars of jobs
+  include_vars:
+    file: vars/jobs.yml
+
+- name: create pipeline jobs directory
+  file:
+    path: "{{ jenkins_home_volume }}/jobs/{{ item.job_directory }}"
+    state: directory
+    owner: ubuntu
+  with_items:
+    - "{{ pipeline_jobs }}"
+
+- name: copy over pipeline job configs
+  template:
+   src: pipeline.conf.j2
+   dest: "{{ jenkins_home_volume }}/jobs/{{ item.job_directory }}/config.xml"
+  vars:
+    pipelinejobs: "{{ item }}"
+  with_items:
+   - "{{ pipeline_jobs|list }}"
+
+- name: copy over the master and unit key
+  synchronize:
+   src: files/secrets/
+   dest: "{{ jenkins_home_volume }}/secrets"
+   archive: yes
+   links: yes
+
+- name: copy ver the master key
+  copy:
+     content: "{{ jenkins_master_key }}"
+     dest: "{{ jenkins_home_volume }}/secrets/master.key"
+
+- name: change the owner of jenkins config
+  command: docker exec -u root jenkins chown -R jenkins /var/
+
+- name: change the owner of docker socket
+  command: docker exec -u root jenkins chown -R jenkins /run
+
+- name: restart jenkins by container
+  command: docker restart jenkins
+
+- name: Make sure Jenkins is responding on the configured port again
+  wait_for:
+    port: 8080
+    delay: 3
+    timeout: 30

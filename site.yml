@@ -1,0 +1,11 @@
+---
+- name: install docker and jenkins
+  hosts: localhost
+  become: true
+  gather_facts: true
+  roles:
+    - docker
+    - jenkins
+  vars_files:
+    - vars/aws.yml
+    - vars/users.yml

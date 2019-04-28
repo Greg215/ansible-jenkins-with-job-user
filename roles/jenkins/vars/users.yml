@@ -1,0 +1,11 @@
+---
+users:
+   - user_directory: twtest
+     user_full_name: "tw"
+     user_email: tw@test.com
+     user_password: "{{ test_pwd }}"
+
+   - user_directory: ghu
+     user_full_name: "Greg Hu"
+     user_email: ghu@test.test
+     user_password: "{{ ghu_pwd }}"

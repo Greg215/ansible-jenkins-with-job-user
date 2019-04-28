@@ -1,0 +1,7 @@
+---
+pipeline_jobs:
+   - job_directory: tw-job
+     project_repo: "https://github.com/Greg215/tw-test.git"
+     repo_branch: "*/master"
+     jenkinsfile: Jenkinsfile
+
