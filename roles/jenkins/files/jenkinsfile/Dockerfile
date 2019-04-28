@@ -1,6 +1,8 @@
 FROM openjdk:8-jdk
 
-RUN apt-get update && apt-get install -y git curl libltdl7 build-essential && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y git curl libltdl7 && rm -rf /var/lib/apt/lists/*
+
+RUN apt update && apt install build-essential
 
 ARG user=jenkins
 ARG group=jenkins
