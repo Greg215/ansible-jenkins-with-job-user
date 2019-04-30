@@ -30,7 +30,7 @@
     image: "{{ jenkins_image }}"
     privileged: true
     ports:
-      - 8080:8080
+      - 80:8080
     volumes:
       - /tmp/jenkins_home:/var/jenkins_home
       - /usr/bin/docker:/usr/bin/docker
@@ -38,7 +38,7 @@
 
 - name: Make sure Jenkins is responding on the configured port.
   wait_for:
-    port: 8080
+    port: 80
     delay: 3
     timeout: 30
 
@@ -105,6 +105,21 @@
      content: "{{ jenkins_master_key }}"
      dest: "{{ jenkins_home_volume }}/secrets/master.key"
 
+- name: copy over the config file 
+  synchronize:
+    src: files/config/
+    dest: "{{ jenkins_home_volume }}"
+    archive: yes
+    links: yes
+
+- name: copy over the salve master key
+  lineinfile:
+    path: "{{ jenkins_home_volume }}/secrets/slave-to-master-security-kill-switch"
+    regexp: 'true'
+    line: 'false'
+    create: yes
+    state: present
+
 - name: change the owner of jenkins config
   command: docker exec -u root jenkins chown -R jenkins /var/
 
@@ -122,6 +137,6 @@
 
 - name: Make sure Jenkins is responding on the configured port again
   wait_for:
-    port: 8080
+    port: 80
     delay: 3
     timeout: 30
