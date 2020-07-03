@@ -1,10 +1,10 @@
 ---
-- name: copy over the dockerfile for jenkins to created machine
-  synchronize:
-   src: files/jenkinsfile/
-   dest: /tmp/jenkins_dockerfile
-   archive: yes
-   links: yes
+#- name: copy over the dockerfile for jenkins to created machine
+#  synchronize:
+#   src: files/jenkinsfile/
+#   dest: /tmp/jenkins_dockerfile
+#   archive: yes
+#   links: yes
 
 # /tmp is not a good place for jenkins home files, normally put it
 # in the AWS EBS or other NFS
@@ -17,17 +17,17 @@
     group: ubuntu
 
 # will build jenkins from Dockerfile with also the plugins
-- name: build jenkins from Dockerfile will take few mins
-  docker_image:
-     name: "{{ image_name }}"
-     tag: "{{ image_tag }}"
-     state: present
-     path: "{{ dockerfile_path }}"
+#- name: build jenkins from Dockerfile will take few mins
+#  docker_image:
+#     name: "{{ image_name }}"
+#     tag: "{{ image_tag }}"
+#     state: present
+#     path: "{{ dockerfile_path }}"
 
 - name: run jenkins inside the container by using the jenkins image
   docker_container:
     name: "{{ jenkins_docker_name }}"
-    image: "{{ jenkins_image }}"
+    image: greghu/jenkins:latest
     privileged: true
     ports:
       - 80:8080
