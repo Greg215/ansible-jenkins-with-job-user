@@ -16,14 +16,3 @@
         fstype: "{{ filetype }}"
         state: mounted
 
-- name: create docker volume
-  file:
-        path: /volumes/docker
-        state: directory
-
-- name: create symlink for to volume
-  file:
-        force: yes
-        src: /volumes/docker
-        path: /var/lib/docker
-        state: link
