@@ -4,8 +4,8 @@
   become: true
   gather_facts: true
   roles:
-    - docker
     - mountvolume
+    - docker
     - jenkins
   vars_files:
     - vars/aws.yml
