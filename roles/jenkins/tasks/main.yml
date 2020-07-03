@@ -32,7 +32,7 @@
     ports:
       - 80:8080
     volumes:
-      - /tmp/jenkins_home:/var/jenkins_home
+      - /volumes/jenkins_home:/var/jenkins_home
       - /usr/bin/docker:/usr/bin/docker
       - /var/run/docker.sock:/var/run/docker.sock
 

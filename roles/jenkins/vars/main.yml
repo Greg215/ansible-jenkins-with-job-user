@@ -4,4 +4,4 @@ image_tag: latest
 dockerfile_path: /tmp/jenkins_dockerfile
 jenkins_docker_name: jenkins
 jenkins_image: "{{ image_name }}:{{ image_tag }}"
-jenkins_home_volume: /tmp/jenkins_home
+jenkins_home_volume: /volumes/jenkins_home

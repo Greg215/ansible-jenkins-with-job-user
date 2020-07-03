@@ -1,0 +1,4 @@
+---
+filetype: ext4
+device: /dev/xvdf
+mount_path: /volumes

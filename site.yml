@@ -5,6 +5,7 @@
   gather_facts: true
   roles:
     - docker
+    - mountvolume
     - jenkins
   vars_files:
     - vars/aws.yml
